@@ -20,3 +20,15 @@ docker kill sqlserver && docker rm sqlserver
 
 # Note
 Remember to build if you change the sql files since they won't update automatically.
+
+# Load raw data
+To load raw data run 
+```sh
+sh load_raw_data.sh
+```
+
+# Load Historical data
+Once the raw data has finished loading, load the historical data with 
+```sh
+sh load_historical_data.sh
+```
