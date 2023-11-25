@@ -18,6 +18,24 @@ To kill the docker, you can run
 docker kill sqlserver && docker rm sqlserver 
 ```
 
+# Run parsing script
+It's important to do this step before loading the raw data, 
+as the parsed files are needed for the load operation.
+
+Enter the running docker container:
+```sh
+docker exec -it sqlserver /bin/bash
+```
+
+Go to the gendata folder and execute the parsing script:
+
+```sh
+cd data/gendata
+python3 finwire_parsing.py
+```
+
+After this you can exit the container and continue with the data load.
+
 # Note
 Remember to build if you change the sql files since they won't update automatically.
 
