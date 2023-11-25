@@ -1,0 +1,1 @@
+SELECT * INTO HR FROM raw.HR;
