@@ -20,7 +20,7 @@ CREATE TABLE raw.Trade (
     T_TAX NUMERIC(10,2),
 );
 
-BULK INSERT raw.Trade FROM '/usr/config/data/gendata/Batch1/Trade.txt' WITH
+BULK INSERT raw.Trade FROM '/usr/config/data/gendata/Batch1/CustomerMgmtParsed.csv' WITH
 (
     FIRSTROW = 1,
     FIELDTERMINATOR = '|',
