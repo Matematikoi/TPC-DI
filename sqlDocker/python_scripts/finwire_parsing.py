@@ -2,10 +2,8 @@ import pandas as pd
 import re
 import os
 
-# Helper functions
-
-# Get a list of column ranges according to the type of schema
 def get_col_spec_list( schema_df ):
+    '''Get a list of column ranges according to the type of schema'''
     schema_df[ 'CharPosEnd' ] = schema_df[ 'Length' ].cumsum()
     schema_df[ 'CharPosStart' ] = ( schema_df.shift( periods = 1, fill_value = 0 ) )[ 'CharPosEnd' ]
     schema_df.loc[ schema_df[ 'Field' ] == 'PTS', 'CharPosStart' ] = 0
@@ -14,15 +12,15 @@ def get_col_spec_list( schema_df ):
     
     return colspecs
 
-# Get a df that classifies each row in the file as each type of finwire file
 def get_finwire_row_types( finwire_df ):
+    '''Get a df that classifies each row in the file as each type of finwire file'''
     finwire_type_df = pd.read_fwf( finwire_df, colspecs=[( 15, 18 )], header = None )
     finwire_type_df.columns = [ 'Type' ]
     finwire_type_df[ 'RowID' ] = finwire_type_df.index
     return finwire_type_df
 
-# Get a list of rows to exclude to keep rows the desired finwire type
 def get_finwire_rows_to_exclude( finwire_df, finwire_type ):
+    '''Get a list of rows to exclude to keep rows the desired finwire type'''
     if( finwire_type == 'CMP' ):
         finwire_df = finwire_df[ finwire_df.Type != 'CMP' ] 
     elif( finwire_type == 'SEC' ):
@@ -32,8 +30,8 @@ def get_finwire_rows_to_exclude( finwire_df, finwire_type ):
         
     return [ RowID for RowID in finwire_df[ 'RowID' ] ]
 
-# Get the finwire file parsed for a particular finwire type
 def get_finwire_df_for_type( finwire_file_path, finwire_type, schema_df ):
+    '''Get the finwire file parsed for a particular finwire type'''
     row_types_df = get_finwire_row_types( finwire_file_path )
     
     if( finwire_type == 'CMP' ):
@@ -50,8 +48,9 @@ def get_finwire_df_for_type( finwire_file_path, finwire_type, schema_df ):
 
     return df        
        
-# Scan a finwire file and return a dictionary with each of its finwire types dataframes 
+
 def parse_finwire_data( finwire_file_path ):
+    '''Scan a finwire file and return a dictionary with each of its finwire types dataframes '''
     row_types_df = get_finwire_row_types( finwire_file_path )
     row_types = list( row_types_df[ 'Type' ].drop_duplicates() )
     finwire_dfs = { 'CMP': None, 'SEC': None, 'FIN': None }
@@ -66,8 +65,8 @@ def parse_finwire_data( finwire_file_path ):
             
     return finwire_dfs
 
-# Parse a list of finwire files and return each as a collection of finwire type dataframes
 def get_finwire_dfs( finwire_file_paths ):
+    '''Parse a list of finwire files and return each as a collection of finwire type dataframes'''
     cmp_df = pd.DataFrame()
     sec_df = pd.DataFrame()
     fin_df = pd.DataFrame()
@@ -86,9 +85,9 @@ def get_finwire_dfs( finwire_file_paths ):
     return { 'CMP': cmp_df, 'SEC': sec_df, 'FIN': fin_df }
 
 # Define file paths
-root_path = '/usr/config/data/gendata'
-finwire_source_files_path = root_path + '/Batch1'
-finwire_schema_files_path = root_path + '/Schema'
+root_path = '/usr/config'
+finwire_source_files_path = root_path + '/data/gendata/Batch1'
+finwire_schema_files_path = root_path + '/csv_files/Schema'
 
 # Read the schema dataframes
 cmp_schema_df = pd.read_csv( finwire_schema_files_path + '/CMP_Records_Schema.csv' )

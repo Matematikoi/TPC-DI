@@ -12,6 +12,9 @@ docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMic
 # Add watch history
 echo ADDING WATCH HISTORY
 docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMicrosoft# -d dwh -i sql_files/add_watch_history_raw.sql
+# Add finwire files
+echo ADDING FINWIRE FILES
+docker exec sqlserver python3 /usr/config/python_scripts/finwire_parsing.py
 # Add company finwire
 echo ADDING COMPANY FINWIRE
 docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMicrosoft# -d dwh -i sql_files/add_finwire_company_raw.sql
