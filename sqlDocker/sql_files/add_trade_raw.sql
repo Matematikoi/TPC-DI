@@ -1,4 +1,3 @@
-
 CREATE TABLE raw.Trade (
 	-- I have no idea why this are in the documentation but not here
     -- but I leave them here just because
@@ -20,7 +19,7 @@ CREATE TABLE raw.Trade (
     T_TAX NUMERIC(10,2),
 );
 
-BULK INSERT raw.Trade FROM '/usr/config/data/gendata/Batch1/CustomerMgmtParsed.csv' WITH
+BULK INSERT raw.Trade FROM '/usr/config/data/gendata/Batch1/Trade.txt' WITH
 (
     FIRSTROW = 1,
     FIELDTERMINATOR = '|',

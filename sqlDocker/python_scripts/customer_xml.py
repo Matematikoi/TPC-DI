@@ -62,19 +62,19 @@ def get_attributes(tag, explain_dict, prefix = ''):
     result = {}
     for child_tag in explain_dict:
         if child_tag == 'attrs':
-            result |= tag.attrs
+            result = {**result, **tag.attrs}
         else:
             ct = tag.find(child_tag)
             if ct == None:
                 continue
-            result |= get_attributes(
+            result = { **get_attributes(
                 ct, 
                 explain_dict[child_tag],
                 prefix+'_'+child_tag if len(prefix)>0 else child_tag
-            )
+            ), **result}
     return result
 
 result = []
 for i in soup.find_all('TPCDI:Action'):
-    result.append(i.attrs|get_attributes(i.find('Customer'), Customer))
+    result.append({**i.attrs,**get_attributes(i.find('Customer'), Customer)})
 pd.DataFrame(result).to_csv('/usr/config/data/gendata/Batch1/CustomerMgmtParsed.csv', index=False)
