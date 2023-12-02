@@ -1,8 +1,8 @@
 CREATE TABLE raw.TradeType (
-    TT_ID CHAR(3),
-    TT_NAME CHAR(12),
-    TT_IS_SELL NUMERIC(1),
-    TT_IS_MRKT NUMERIC(1)
+    TT_ID CHAR(3) Not NULL,
+    TT_NAME CHAR(12) Not NULL,
+    TT_IS_SELL numeric(1) Not NULL,
+    TT_IS_MRKT numeric(1) Not NULL
 );
 
 BULK INSERT raw.TradeType FROM '/usr/config/data/gendata/Batch1/TradeType.txt' WITH
