@@ -1,4 +1,4 @@
-CREATE TABLE raw.HR (
+CREATE TABLE raw.HR    (
     EmployeeID NUMERIC(11) NOT NULL,
     ManagerID NUMERIC(11) NOT NULL,
     EmployeeFirstName CHAR(30) NOT NULL,
