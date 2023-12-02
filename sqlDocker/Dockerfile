@@ -2,9 +2,13 @@ FROM mcr.microsoft.com/mssql/server:2017-latest
 # Install essentials
 RUN apt update
 RUN apt install -y \
-    build-essential 
+    build-essential \
+    python3-pip
+
 # Create a config directory
 RUN mkdir -p /usr/config
+RUN pip3 --no-cache-dir install pandas bs4 lxml
+
 WORKDIR /usr/config
 
 # Bundle config source
