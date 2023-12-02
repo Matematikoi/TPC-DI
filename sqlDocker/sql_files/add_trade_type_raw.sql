@@ -11,4 +11,4 @@ BULK INSERT raw.TradeType FROM '/usr/config/data/gendata/Batch1/TradeType.txt' W
     FIELDTERMINATOR = '|',
     ROWTERMINATOR = '0x0a',
     KEEPNULLS
-)
+);
