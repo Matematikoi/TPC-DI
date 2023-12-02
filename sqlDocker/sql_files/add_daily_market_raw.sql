@@ -1,0 +1,17 @@
+CREATE TABLE raw.DailyMarket (
+    DM_DATE DATE NOT NULL,
+    DM_S_SYMB CHAR(15) NOT NULL,
+    DM_CLOSE NUMERIC(8,2) NOT NULL,
+    DM_HIGH NUMERIC(8,2) NOT NULL,
+    DM_LOW NUMERIC(8,2) NOT NULL,
+    DM_VOL NUMERIC(12) NOT NULL
+);
+
+
+BULK INSERT raw.DailyMarket FROM '/usr/config/data/gendata/Batch1/DailyMarket.txt' WITH
+(
+    FIRSTROW = 1,
+    FIELDTERMINATOR = '|',
+    ROWTERMINATOR = '0x0a',
+    KEEPNULLS
+)
