@@ -15,7 +15,7 @@ CREATE TABLE raw.Prospect (
     NumberCars Numeric(2),
     NumberChildren Numeric(2),
     MaritalStatus CHAR(1),
-    Age NUMERIC(1),
+    Age NUMERIC(3),
     CreditRating NUMERIC(4),
     OwnOrRentFlag CHAR(1),
     Employer CHAR(30),
