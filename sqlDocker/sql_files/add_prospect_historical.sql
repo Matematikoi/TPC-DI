@@ -1,15 +1,15 @@
 INSERT INTO Prospect
 	SELECT AgencyID
 		, ( SELECT SK_DateID 
-			FROM dbo.DimDate
-			WHERE DateValue = (SELECT BatchDate FROM [Source].[BatchDate]) ) AS SK_RecordDateID
+			FROM DimDate
+			WHERE DateValue = (SELECT BatchDate FROM raw.BatchDate) ) AS SK_RecordDateID
 		, ( SELECT SK_DateID 
-			FROM dbo.DimDate
-			WHERE DateValue = (SELECT BatchDate FROM [Source].[BatchDate]) ) AS SK_UpdateDateID
+			FROM DimDate
+			WHERE DateValue = (SELECT BatchDate FROM raw.BatchDate) ) AS SK_UpdateDateID
 		, 1 AS BatchID
 		, (  
 			SELECT COUNT(*)
-			FROM dbo.DimCustomer DC 
+			FROM DimCustomer DC 
 			WHERE UPPER( DC.FirstName ) = UPPER( P.FirstName )	
 				AND UPPER( DC.LastName ) = UPPER( P.LastName )
 				AND UPPER( DC.AddressLine1 ) = UPPER( P.AddressLine1 )
