@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Adds priority tables
+# Adds priority dimension tables
 echo ADDING DATE DIMENSION
 echo ADDING TIME DIMENSION
 echo ADDING BROKER DIMENSION
@@ -18,6 +18,11 @@ docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMic
 # Adds Status Type
 echo ADDING STATUS TYPE
 docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMicrosoft# -d dwh -i sql_files/add_status_type_historical.sql
+# Adds more dimensions
+echo ADDING SECURITY DIMENSION
+echo ADDING TRADE DIMENSION
+echo ADDING FINANCIAL
+docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMicrosoft# -d dwh -i sql_files/add_extra_dimensions_historical.sql
 #Adds Daily Market
 echo ADDING DAILY MARKET
 docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMicrosoft# -d dwh -i sql_files/add_daily_market_historical.sql
