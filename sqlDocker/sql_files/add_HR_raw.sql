@@ -7,7 +7,7 @@ CREATE TABLE raw.HR    (
     EmployeeJobCode NUMERIC(3) ,
     EmployeeBranch CHAR(30),
     EmployeeOffice CHAR(10),
-    EmployeePhone CHAR(10)
+    EmployeePhone CHAR(14)
 
  );
 
