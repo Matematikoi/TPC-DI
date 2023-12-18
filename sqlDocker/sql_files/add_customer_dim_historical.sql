@@ -1,5 +1,6 @@
  -- Pending primary key
  CREATE TABLE DimCustomer (
+    SK_CustomerID int IDENTITY(1,1) PRIMARY KEY,
     CustomerID NVARCHAR(80) ,
     TaxId NVARCHAR(20) ,
     Status NVARCHAR(10) ,
@@ -43,3 +44,37 @@ BULK INSERT DimCustomer FROM '/usr/config/data/gendata/Batch1/CustomerDim.csv' W
     ROWTERMINATOR = '0x0a',
     KEEPNULLS
 )
+
+UPDATE dimCustomer
+SET 
+    dimCustomer.NationalTaxRate=tr.TX_RATE , 
+    dimCustomer.NationalTaxRateDesc=tr.TX_NAME 
+FROM dimCustomer c
+INNER JOIN
+TaxRate tr
+ON c.nationalTaxId = tr.TX_ID ;
+
+UPDATE dimCustomer
+SET 
+    dimCustomer.LocalTaxRate=tr.TX_RATE , 
+    dimCustomer.LocalTaxRateDesc=tr.TX_NAME 
+FROM dimCustomer c
+INNER JOIN
+TaxRate tr
+ON c.localTaxId = tr.TX_ID ;
+
+UPDATE dimCustomer
+SET 
+    dimCustomer.AgencyId=p.AgencyID , 
+    dimCustomer.CreditRating=p.CreditRating ,
+    dimCustomer.NetWorth =p.NetWorth  
+FROM dimCustomer c
+INNER JOIN
+raw.Prospect p
+ON UPPER(p.FirstName)  = UPPER(c.FirstName)
+AND UPPER(p.LastName) = UPPER(c.LastName)
+AND UPPER(p.PostalCode) = UPPER(c.PostalCode)
+AND UPPER(p.AddressLine1) = UPPER(c.AddressLine1)
+AND UPPER(p.AddressLine2) = UPPER(c.AddressLine2)
+WHERE
+c.IsCurrent =1;

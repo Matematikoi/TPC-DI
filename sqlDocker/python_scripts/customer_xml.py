@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 def make_customer_dim(customerInfo:pd.DataFrame):
-    customerDim = pd.DataFrame({})
+    customerDim = pd.DataFrame({'SK_CustomerID':[]})
     customerDim['CustomerID'] = customerInfo.C_ID
     customerDim['TaxId'] = customerInfo.C_TAX_ID
     customerDim['Status'] = customerInfo.status
