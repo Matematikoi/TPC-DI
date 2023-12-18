@@ -35,3 +35,6 @@ docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMic
 # Adds Watch History
 echo ADDING WATCH HISTORY
 docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMicrosoft# -d dwh -i sql_files/add_watch_history_historical.sql
+# Adds DimCustomer History
+echo ADDING Dim Customer
+docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMicrosoft# -d dwh -i sql_files/add_customer_dim_historical.sql
