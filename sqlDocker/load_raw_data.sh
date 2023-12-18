@@ -1,5 +1,8 @@
 #!/bin/sh
 
+START=$(date +%s)
+
+
 # Add raw schema
 echo ADDING RAW SCHEMA
 docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMicrosoft# -d dwh -i sql_files/create_raw_schema.sql
@@ -64,3 +67,8 @@ docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMic
 # Add BatchDate
 echo ADDING BatchDate
 docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMicrosoft# -d dwh -i sql_files/add_batch_date_raw.sql
+
+
+END=$(date +%s)
+DIFF=$(( $END - $START ))
+echo raw_seconds,$DIFF  > times.txt
