@@ -38,6 +38,10 @@ INTO DimSecurity
 FROM SecurityTransformation
 ORDER BY Symbol, EffectiveDate;
 
+ALTER TABLE DimSecurity
+   ADD SK_SecurityID INT IDENTITY(1,1)
+       CONSTRAINT PK_DimSecurity PRIMARY KEY CLUSTERED;
+
 -- Trade Dimension
 WITH TradeTransformation AS (
 	SELECT
