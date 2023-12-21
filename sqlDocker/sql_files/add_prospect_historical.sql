@@ -32,7 +32,7 @@ BEGIN
 
     RETURN SUBSTRING(@marketing_template, 1, LEN(@marketing_template));
 END;
-
+GO
 WITH ProspectTransformation as (
 	SELECT P.AgencyID
 		, ( SELECT SK_DateID 
