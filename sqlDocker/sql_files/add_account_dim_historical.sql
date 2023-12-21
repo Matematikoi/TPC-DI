@@ -1,4 +1,4 @@
-CREATE TABLE dimAccount(
+CREATE TABLE DimAccount(
     SK_AccountID int IDENTITY(1,1) PRIMARY KEY,
     AccountID NUMERIC(11),
     BrokerID NUMERIC(11),
@@ -14,7 +14,7 @@ CREATE TABLE dimAccount(
     EndDate DATE,
     ActionType VARCHAR(50),
 )
-BULK INSERT dimAccount FROM '/usr/config/data/gendata/Batch1/AccountDim.csv' WITH
+BULK INSERT DimAccount FROM '/usr/config/data/gendata/Batch1/AccountDim.csv' WITH
 (
     FIRSTROW = 2,
     FIELDTERMINATOR = ',',
@@ -29,7 +29,7 @@ INSERT INTO news (SK_AccountID)
 SELECT SK_AccountID
 FROM 
     (SELECT DISTINCT SK_AccountID
-            FROM dimAccount 
+            FROM DimAccount 
             WHERE ActionType IN ('NEW', 'ADDACCT')
     ) new
 --UPDATE CUSTOMER--
@@ -39,7 +39,7 @@ INSERT INTO news (SK_AccountID)
 SELECT SK_AccountID
 FROM 
     (SELECT DISTINCT SK_AccountID
-            FROM dimAccount 
+            FROM DimAccount 
             WHERE actiontype = 'UPDCUST'
     ) upc
 --INACTIVE--
@@ -49,7 +49,7 @@ INSERT INTO news (SK_AccountID)
 SELECT *
 FROM 
     (SELECT DISTINCT SK_AccountID
-            FROM dimAccount 
+            FROM DimAccount 
             WHERE actiontype = 'INACT'
     ) inac    
 --Brokers--
@@ -94,7 +94,7 @@ FROM
 UPDATE A
 SET 
     A.SK_BrokerID = B.SK_BrokerID
-FROM dimAccount A
+FROM DimAccount A
 INNER JOIN news N on A.SK_AccountID = N.SK_AccountID
 INNER JOIN brokers B on A.BrokerID = B.BrokerID
 WHERE A.EffectiveDate >= B.EffectiveDate
@@ -103,7 +103,7 @@ AND   A.EndDate <= B.EndDate
 UPDATE A
 SET 
     A.SK_CustomerID = C.SK_CustomerID
-FROM dimAccount A
+FROM DimAccount A
 INNER JOIN news N on A.SK_AccountID = N.SK_AccountID
 INNER JOIN customers C ON A.CustomerID = C.CustomerID
 WHERE A.EffectiveDate >= C.EffectiveDate
@@ -112,19 +112,19 @@ AND   A.EndDate <= C.EndDate
 UPDATE A
 SET 
     A.SK_CustomerID = C.SK_CustomerID
-FROM dimAccount A
+FROM DimAccount A
 INNER JOIN upd U on A.SK_AccountID = U.SK_AccountID
 LEFT JOIN customers C ON A.CustomerID = C.CustomerID
 --INACT--
 UPDATE A
 SET 
    A.SK_CustomerID = C.SK_CustomerID 
-FROM dimAccount A
+FROM DimAccount A
 INNER JOIN ina I on A.SK_AccountID = I.SK_AccountID
 LEFT JOIN customers C ON A.CustomerID = C.CustomerID
 
 
-ALTER TABLE dimAccount
+ALTER TABLE DimAccount
     DROP COLUMN BrokerID, CustomerID,ActionType;
 
 DROP TABLE news, upd, ina, brokers, customers;

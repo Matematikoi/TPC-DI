@@ -67,7 +67,7 @@ UPDATE dimCustomer
 SET 
     dimCustomer.AgencyId=p.AgencyID , 
     dimCustomer.CreditRating=p.CreditRating ,
-    dimCustomer.NetWorth =p.NetWorth  
+    dimCustomer.NetWorth =p.NetWorth 
 FROM dimCustomer c
 INNER JOIN
 raw.Prospect p

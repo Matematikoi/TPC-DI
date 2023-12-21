@@ -8,18 +8,24 @@ WITH SecurityTransformation AS (
 		f.ExID AS ExchangeID,
 		dc.SK_CompanyID AS SK_CompanyID,
 		f.ShOut AS SharesOutstanding,
-		f.FirstTradeDate AS FirstTrade,
-		f.FirstTradeExchg AS FirstTradeOnExchange,
+		CAST(f.FirstTradeDate as DATE) AS FirstTrade,
+		CAST(f.FirstTradeExchg as DATE) AS FirstTradeOnExchange,
 		f.Dividend AS Dividend,
+        CASE
+            WHEN LEAD((SELECT BatchDate FROM raw.BatchDate)) OVER (PARTITION BY Symbol ORDER BY PTS ASC) IS NULL
+            THEN 1
+            ELSE 0
+            END AS IsCurrent,
 		CONVERT(DATETIME,STUFF(STUFF(STUFF(STUFF(REPLACE(F.PTS,'-',' '),5,0,'-'),8,0,'-'),14,0,':'),17,0,':'),120) AS EffectiveDate
-	FROM raw.FinwireSecurity f
-	INNER JOIN DimCompany dc ON LTRIM(REPLACE(f.CoNameOrCIK, '0', '')) = dc.CompanyID
-	INNER JOIN StatusType s ON f.Status = s.ST_ID
-	WHERE f.RecType = 'SEC'
-		AND CONVERT(DATETIME,STUFF(STUFF(STUFF(STUFF(REPLACE(F.PTS,'-',' '),5,0,'-'),8,0,'-'),14,0,':'),17,0,':'),120) >= EffectiveDate
-		AND CONVERT(DATETIME,STUFF(STUFF(STUFF(STUFF(REPLACE(F.PTS,'-',' '),5,0,'-'),8,0,'-'),14,0,':'),17,0,':'),120) < EndDate
+	FROM raw.FinwireSecurity f, raw.StatusType s, DimCompany dc
+	WHERE f.Status = s.ST_ID
+	    AND((SUBSTRING(f.CoNameOrCIK, PATINDEX('%[^' + '0' + ']%', f.CoNameOrCIK), LEN(f.CoNameOrCIK)) = dc.CompanyID)
+	        OR f.CoNameOrCIK = dc.Name)
+	    AND CAST(LEFT(PTS, 8) as DATE) >= dc.EffectiveDate
+	    AND CAST(LEFT(PTS, 8) as DATE) < dc.EndDate
 )
 SELECT
+	IDENTITY(INT, 1, 1) AS SK_SecurityID,
 	Symbol,
     Issue,
     Status,
@@ -30,7 +36,7 @@ SELECT
     FirstTrade,
     FirstTradeOnExchange,
     Dividend,
-    CASE WHEN LEAD( EffectiveDate ) OVER ( PARTITION BY Symbol ORDER BY EffectiveDate ASC ) IS NULL THEN 1 ELSE 0 END AS IsCurrent,
+    IsCurrent,
     1 AS BatchID,
     EffectiveDate,
     COALESCE( LEAD( EffectiveDate ) OVER ( PARTITION BY Symbol ORDER BY EffectiveDate ASC ), '9999-12-31 00:00:00' ) AS EndDate
@@ -38,15 +44,11 @@ INTO DimSecurity
 FROM SecurityTransformation
 ORDER BY Symbol, EffectiveDate;
 
-ALTER TABLE DimSecurity
-   ADD SK_SecurityID INT IDENTITY(1,1)
-       CONSTRAINT PK_DimSecurity PRIMARY KEY CLUSTERED;
-
 -- Trade Dimension
 WITH TradeTransformation AS (
 	SELECT
         T.T_ID AS TradeID,
-		1 AS SK_BrokerID,
+		A.SK_BrokerID AS SK_BrokerID,
 		CASE
 			WHEN CHARINDEX('SBMT', TH.TH_ST_ID) > 0 AND T.T_TT_ID IN ( 'TMB', 'TMS' ) OR CHARINDEX('PNDG', TH.TH_ST_ID) > 0 THEN TH.TH_DTS
 		    WHEN CHARINDEX('CMPT', TH.TH_ST_ID) > 0 OR CHARINDEX('CNCL', TH.TH_ST_ID) > 0 THEN NULL
@@ -66,12 +68,12 @@ WITH TradeTransformation AS (
 		ST.ST_NAME AS Status,
 		TT.TT_NAME AS DT_Type,
 		T.T_IS_CASH AS CashFlag,
-		1 AS SK_SecurityID,
-		1 AS SK_CompanyID,
+		S.SK_SecurityID AS SK_SecurityID,
+		S.SK_CompanyID AS SK_CompanyID,
 		T.T_QTY AS Quantity,
 		T.T_BID_PRICE AS BidPrice,
-		1 AS SK_CustomerID,
-		1 AS SK_AccountID,
+		A.SK_CustomerID AS SK_CustomerID,
+		A.SK_AccountID AS SK_AccountID,
 		T.T_EXEC_NAME AS ExecutedBy,
 		T.T_TRADE_PRICE AS TradePrice,
 		T.T_CHRG AS Fee,
@@ -82,6 +84,8 @@ WITH TradeTransformation AS (
 	INNER JOIN raw.TradeHistory TH ON T.T_ID = TH.TH_T_ID
 	INNER JOIN raw.StatusType ST ON T.T_ST_ID = ST.ST_ID
 	INNER JOIN raw.TradeType TT ON T.T_TT_ID = TT.TT_ID
+	INNER JOIN DimSecurity S ON T.T_S_SYMB = S.Symbol AND TH.TH_DTS >= S.EffectiveDate AND TH.TH_DTS < S.EndDate
+	INNER JOIN DimAccount A ON T.T_CA_ID = A.AccountID AND TH.TH_DTS >= A.EffectiveDate AND TH.TH_DTS < A.EndDate
 )
 SELECT
     TradeID,
