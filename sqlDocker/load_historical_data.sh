@@ -35,6 +35,9 @@ echo ADDING SECURITY DIMENSION
 echo ADDING TRADE DIMENSION
 echo ADDING FINANCIAL
 docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMicrosoft# -d dwh -i sql_files/add_financial_trade_security_historical.sql
+# Adds Fact Watches History
+echo ADDING FACT WATCHES
+docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMicrosoft# -d dwh -i sql_files/add_fact_watches_historical.sql
 # Adds Fact Holdings
 echo ADDING FACT HOLDINGS
 docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMicrosoft# -d dwh -i sql_files/add_fact_holdings_historical.sql
