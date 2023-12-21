@@ -7,11 +7,7 @@ FROM raw.CashTransaction CT, DimAccount DA, DimDate DD
 WHERE CT.CT_CA_ID = DA.AccountID
 	AND CONVERT(DATE, CT_DTS) BETWEEN DA.EffectiveDate AND DA.EndDate
 	AND CONVERT(DATE, CT_DTS) = DD.DateValue
-GROUP BY 
-	DA.SK_CustomerID,
-	DA.SK_AccountID,
-	DD.SK_DateID,
-	CONVERT(DATE, CT_DTS))
+)
 SELECT 
      SK_CUSTOMER_ID
 	,SK_ACCOUNT_ID
