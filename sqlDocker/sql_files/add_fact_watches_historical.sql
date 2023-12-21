@@ -26,9 +26,13 @@ on
 	)
 ) 
 select 
-	cd.*,
 	dc.SK_CustomerID,
-	ds.SK_SecurityID
+	ds.SK_SecurityID,
+	cd.DatePlaced,
+	cd.DateRemoved,
+	1 as BatchID
+into
+	FactWatches
 from changing_dimensions cd
 -- TODO: check if we should add a temporal join here, or this is enough
 -- otherwise this can be a temporal join https://cs.ulb.ac.be/public/_media/teaching/infoh415/temporal_join_example.pdf
