@@ -18,5 +18,5 @@ SELECT
 	,SK_DATE_ID
 	,Cash
 	, 1 as BATCHID
-INSERT INTO FactCashBalances
-from CashBalancesTransformation
+INTO FactCashBalances
+FROM CashBalancesTransformation
