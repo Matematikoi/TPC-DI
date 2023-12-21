@@ -22,28 +22,46 @@ SELECT
 INTO DimBroker
 FROM raw.HR;
 
--- Company Dimension
+--Company Dimension New
 SELECT
     IDENTITY(INT, 1, 1) AS SK_CompanyID,
     CIK as CompanyID,
-    CASE WHEN LEAD( (SELECT TOP 1 BatchDate FROM raw.BatchDate) ) OVER ( PARTITION BY CIK ORDER BY PTS ASC ) IS NULL THEN 1 ELSE 0 END AS IsCurrent,
-	(SELECT TOP 1 BatchDate FROM raw.BatchDate) as EffectiveDate,
-	COALESCE( LEAD( (SELECT TOP 1 BatchDate FROM raw.BatchDate) ) OVER ( PARTITION BY CIK ORDER BY PTS ASC ), '9999-12-31' ) AS EndDate,
-	1 as BatchID,
-	CompanyName as Name,
-	SPrating as SPRating,
-	CEOname as CEO,
-	Description,
-	FoundingDate,
-	AddrLine1 as AddressLine1,
-	AddrLine2 as AddressLine2,
-	PostalCode,
-	City,
-	StateProvince as State_Prov,
-	Country,
-	s.ST_NAME as Status,
-	i.IN_NAME as Industry,
-	(CASE WHEN SPrating LIKE 'A%' OR SPrating LIKE 'BBB%' THEN 0 ELSE 1 END) as IsLowGrade
+    s.ST_NAME as Status,
+    CompanyName as Name,
+    i.IN_NAME as Industry,
+    (CASE
+        WHEN SPrating not in ('AAA','AA','AA+','AA-','A','A+','A-','BBB','BBB+','BBB-','BB','BB+','BB-','B','B+','B-','CCC','CCC+','CCC-','CC','C','D')
+            THEN null
+        ELSE c.SPrating END) as SPrating,
+    (CASE
+        WHEN SPrating not in ('AAA','AA','AA+','AA-','A','A+','A-','BBB','BBB+','BBB-','BB','BB+','BB-','B','B+','B-','CCC','CCC+','CCC-','CC','C','D')
+            THEN null
+        WHEN c.SPrating like 'A%' or c.SPrating like 'BBB%'
+            THEN 0
+        ELSE
+            1
+    END) as islowgrade,
+    CEOname as CEO,
+    AddrLine1 as AddressLine1,
+    AddrLine2 as AddressLine2,
+    PostalCode,
+    City,
+    StateProvince as State_Prov,
+    Country,
+    Description,
+    FoundingDate,
+    CAST(LEFT(c.PTS, 8) AS DATE) AS EffectiveDate,
+    CASE
+        WHEN LEAD(CAST(LEFT(c.PTS, 8) AS DATE)) OVER (PARTITION BY c.CIK ORDER BY CAST(LEFT(c.PTS, 8) AS DATE) ASC) IS NOT NULL
+        THEN LEAD(CAST(LEFT(c.PTS, 8) AS DATE)) OVER (PARTITION BY c.CIK ORDER BY CAST(LEFT(c.PTS, 8) AS DATE) ASC)
+        ELSE '9999-12-31'
+    END AS EndDate,
+    CASE
+        WHEN LEAD(CAST(LEFT(c.PTS, 8) AS DATE)) OVER (PARTITION BY c.CIK ORDER BY CAST(LEFT(c.PTS, 8) AS DATE) ASC) IS NULL
+        THEN 1
+        ELSE 0
+    END AS IsCurrent,
+    1 as BatchID
 INTO DimCompany
 FROM raw.FinwireCompany c, raw.StatusType s, raw.Industry I
 WHERE c.Status = s.ST_ID AND c.IndustryID = i.IN_ID;
