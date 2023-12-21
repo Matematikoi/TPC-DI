@@ -48,7 +48,7 @@ ORDER BY Symbol, EffectiveDate;
 WITH TradeTransformation AS (
 	SELECT
         T.T_ID AS TradeID,
-		1 AS SK_BrokerID, --Needs DimAccount
+		A.SK_BrokerID AS SK_BrokerID,
 		CASE
 			WHEN CHARINDEX('SBMT', TH.TH_ST_ID) > 0 AND T.T_TT_ID IN ( 'TMB', 'TMS' ) OR CHARINDEX('PNDG', TH.TH_ST_ID) > 0 THEN TH.TH_DTS
 		    WHEN CHARINDEX('CMPT', TH.TH_ST_ID) > 0 OR CHARINDEX('CNCL', TH.TH_ST_ID) > 0 THEN NULL
@@ -72,8 +72,8 @@ WITH TradeTransformation AS (
 		S.SK_CompanyID AS SK_CompanyID,
 		T.T_QTY AS Quantity,
 		T.T_BID_PRICE AS BidPrice,
-		1 AS SK_CustomerID, -- Needs DimAccount
-		1 AS SK_AccountID, -- Needs DimAccount
+		A.SK_CustomerID AS SK_CustomerID,
+		A.SK_AccountID AS SK_AccountID,
 		T.T_EXEC_NAME AS ExecutedBy,
 		T.T_TRADE_PRICE AS TradePrice,
 		T.T_CHRG AS Fee,
@@ -85,7 +85,7 @@ WITH TradeTransformation AS (
 	INNER JOIN raw.StatusType ST ON T.T_ST_ID = ST.ST_ID
 	INNER JOIN raw.TradeType TT ON T.T_TT_ID = TT.TT_ID
 	INNER JOIN DimSecurity S ON T.T_S_SYMB = S.Symbol AND TH.TH_DTS >= S.EffectiveDate AND TH.TH_DTS < S.EndDate
-	--INNER JOIN DimAccount A ON T.T_CA_ID = A.AccountID AND TH.TH_DTS >= A.EffectiveDate AND TH.TH_DTS < A.EndDate
+	INNER JOIN DimAccount A ON T.T_CA_ID = A.AccountID AND TH.TH_DTS >= A.EffectiveDate AND TH.TH_DTS < A.EndDate
 )
 SELECT
     TradeID,
