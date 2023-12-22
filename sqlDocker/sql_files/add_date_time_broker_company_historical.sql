@@ -20,7 +20,9 @@ SELECT
     (SELECT MIN(DateValue) FROM DimDate) as EffectiveDate,
     '9999-12-31' AS EndDate
 INTO DimBroker
-FROM raw.HR;
+FROM raw.HR
+WHERE
+    EmployeeJobCode = 314;
 
 --Company Dimension New
 SELECT
