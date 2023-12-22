@@ -12,9 +12,6 @@ docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMic
 # Adds Tax Rate
 echo ADDING TAX RATE
 docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMicrosoft# -d dwh -i sql_files/add_tax_rate_historical.sql
-# Adds HR
-echo ADDING HR
-docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMicrosoft# -d dwh -i sql_files/add_hr_historical.sql
 # Adds Industry
 echo ADDING INDUSTRY
 docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMicrosoft# -d dwh -i sql_files/add_industry_historical.sql
@@ -41,7 +38,18 @@ docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMic
 # Adds Fact Holdings
 echo ADDING FACT HOLDINGS
 docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMicrosoft# -d dwh -i sql_files/add_fact_holdings_historical.sql
-
+# Adds Prospect History
+echo ADDING PROSPECT
+docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMicrosoft# -d dwh -i sql_files/add_prospect_historical.sql
+# Adds Fact Cash Balances
+echo ADDING FACT CASH BALANCES
+docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMicrosoft# -d dwh -i sql_files/add_fact_cash_balances_historical.sql
+# Adds Fact Market History
+echo ADDING FACT MARKET HISTORY
+docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMicrosoft# -d dwh -i sql_files/add_fact_market_history_historical.sql
+# Adds prospect to DimCustomer
+echo ADDING PROSPECT TO CUSTOMER DIMENSION
+docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ih4teMicrosoft# -d dwh -i sql_files/add_prospect_to_dim_customer.sql
 
 
 END=$(date +%s)
