@@ -33,7 +33,13 @@ Once the raw data has finished loading, load the historical data with
 sh load_historical_data.sh
 ```
 
+# Run Audit tests
+To perform the audit tests run
+```sh
+sh run_audit.sh
+```
+
 # Run everything
 ```sh
-docker kill sqlserver && docker rm sqlserver &&  docker build --network host -t sqlserver:2017 . && sleep 5 && docker run --name sqlserver -e "MSSQL_USER=gabriel" -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=Ih4teMicrosoft#" -p 1433:1433 -d sqlserver:2017 && sleep 4 && sh load_raw_data.sh && sh load_historical_data.sh
+docker kill sqlserver && docker rm sqlserver &&  docker build --network host -t sqlserver:2017 . && sleep 5 && docker run --name sqlserver -e "MSSQL_USER=gabriel" -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=Ih4teMicrosoft#" -p 1433:1433 -d sqlserver:2017 && sleep 4 && sh load_raw_data.sh && sh load_historical_data.sh && sh run_audit.sh
 ```
